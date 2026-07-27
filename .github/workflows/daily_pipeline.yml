@@ -56,7 +56,7 @@ jobs:
       - name: Push data to GCS
         run: dvc push
 
-      -      - name: Commit and push DVC metadata
+      - name: Commit and push DVC metadata
         run: |
           git config --global user.name "github-actions[bot]"
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
