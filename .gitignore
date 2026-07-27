@@ -1,0 +1,35 @@
+# Entorno virtual
+venv/
+
+# DVC cache (no subir datos pesados)
+.dvc/cache/
+.dvc/tmp/
+
+# Archivos de datos pesados
+data/raw/*.csv
+data/processed/*.csv
+
+# Modelos locales
+models/
+
+# Variables de entorno y secretos
+.env
+*.json
+!dvc.yaml
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+
+# IDE
+.vscode/
+.idea/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# W&B local
+wandb/
+artifacts/

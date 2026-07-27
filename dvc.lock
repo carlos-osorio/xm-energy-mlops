@@ -1,0 +1,9 @@
+schema: '2.0'
+stages:
+  ingest_data:
+    cmd: python src/ingest.py
+    outs:
+    - path: data/raw/sample_timeseries.csv
+      hash: md5
+      md5: 46eb96d32e066169b51079abea466927
+      size: 60619

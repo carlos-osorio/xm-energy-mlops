@@ -1,5 +1,0 @@
-outs:
-- md5: 46eb96d32e066169b51079abea466927
-  size: 60619
-  hash: md5
-  path: sample_timeseries.csv

@@ -1,0 +1,7 @@
+dvc[gs]
+wandb
+pandas
+scikit-learn
+lightgbm
+pyyaml
+requests
