@@ -2,8 +2,8 @@ name: Daily MLOps Pipeline
 
 on:
   schedule:
-    - cron: '0 2 * * *'  # Todos los días a las 2:00 AM UTC
-  workflow_dispatch:  # Permite ejecución manual
+    - cron: '0 2 * * *'
+  workflow_dispatch:
 
 permissions:
   id-token: write
