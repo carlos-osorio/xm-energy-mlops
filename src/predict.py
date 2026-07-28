@@ -1,7 +1,7 @@
 import pandas as pd
-import numpy as np
 import lightgbm as lgb
 from pathlib import Path
+from src.features import build_inference_vector
 
 def predict_next_day():
     # 1. Cargar el modelo entrenado localmente en la etapa 'train'
@@ -21,19 +21,16 @@ def predict_next_day():
     df['Fecha'] = pd.to_datetime(df['Fecha'])
     df = df.sort_values('Fecha').reset_index(drop=True)
 
-    # Tomar los últimos 7 precios (lookback)
-    last_7_prices = df['PrecioPromedio'].tail(7).values
-
-    # 3. Preparar el vector de features
-    # El modelo espera: [precio_lag_1, precio_lag_2, ..., precio_lag_7]
-    # precio_lag_1 es el precio de HOY (el más reciente), precio_lag_7 es el más antiguo.
-    # last_7_prices viene en orden cronológico (ascendente); lo invertimos para que
-    # el más reciente quede en lag_1, igual que en el entrenamiento.
-    X_pred = np.array([last_7_prices[::-1]])
+    # 3. Preparar el vector de features con la lógica compartida.
+    # El lookback lo determina el propio modelo (nº de features con que se entrenó),
+    # así predict nunca se desalinea aunque cambie lookback_days en params.yaml.
+    lookback = model.num_feature()
+    prices = df['PrecioPromedio'].values
+    X_pred = build_inference_vector(prices, lookback)
 
     # 4. Predecir el precio del día siguiente
     precio_manana_pred = model.predict(X_pred)[0]
-    precio_hoy = last_7_prices[-1]  # El más reciente en el CSV (último cronológicamente)
+    precio_hoy = prices[-1]  # El más reciente en el CSV (último cronológicamente)
 
     print("-" * 40)
     print(f"📊 Precio de referencia (último dato): ${precio_hoy:.2f} $/MWh")

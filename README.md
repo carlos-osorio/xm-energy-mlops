@@ -54,9 +54,12 @@ xm-energy-mlops/
 │   └── daily_pipeline.yml      # CI/CD: ejecuta el pipeline cada día
 ├── src/
 │   ├── ingest_xm.py            # Descarga y agrega datos de XM a nivel diario
+│   ├── features.py             # Lógica de features compartida (train + inferencia)
 │   ├── train.py                # Entrena LightGBM y guarda el modelo
 │   ├── predict.py              # Predice el precio del día siguiente
 │   └── lineage.py              # Registra linaje (Git + DVC) en W&B
+├── tests/                      # Suite de pytest
+├── params.yaml                 # Hiperparámetros (fuente única de verdad)
 ├── data/
 │   ├── raw/                    # Datos crudos (versionados con DVC, no en git)
 │   └── processed/              # Predicciones
@@ -103,6 +106,17 @@ python -m src.train      # Solo entrenar
 python -m src.predict    # Solo predecir (requiere un modelo entrenado)
 ```
 
+### Tests
+
+```bash
+pip install -r requirements-dev.txt
+pytest -v
+```
+
+Los tests cubren la lógica de features (incluido un test que **blinda el alineamiento
+train/serve**), la extracción de linaje y la estructura de `params.yaml`. En CI se
+ejecutan antes del pipeline: si fallan, no se entrena nada.
+
 ---
 
 ## 🤖 Automatización (CI/CD)
@@ -136,8 +150,9 @@ Mejoras planeadas para madurar el proyecto:
 - [ ] Centralizar hiperparámetros en `params.yaml` (soporte nativo de DVC).
 - [ ] Enriquecer features: calendario (día de semana, festivos) y variables hidrológicas (aportes, embalses) — el precio de bolsa colombiano es fuertemente hidrológico.
 - [ ] Baseline ingenuo ("mañana = hoy") para contextualizar el RMSE.
-- [ ] Fijar versiones en `requirements.txt` y semilla aleatoria para reproducibilidad total.
-- [ ] Tests con `pytest` y validación de datos en `ingest`.
+- [x] Fijar versiones en `requirements.txt` y semilla aleatoria para reproducibilidad.
+- [x] Tests con `pytest` (features, linaje, params).
+- [ ] Validación de datos en `ingest` (rangos, nulos, continuidad de fechas).
 
 ---
 

@@ -6,6 +6,7 @@ from pathlib import Path
 import wandb
 from sklearn.metrics import mean_squared_error
 from src.lineage import log_lineage_to_wandb
+from src.features import build_lag_features, feature_columns
 
 def load_params():
     """Carga los hiperparámetros desde params.yaml (fuente única de verdad)."""
@@ -26,20 +27,15 @@ def train_model():
     
     print(f"📊 Total de registros: {len(df)}")
     
-    # 2. Crear features de lag: los últimos `lookback_days` precios INCLUYENDO hoy.
-    #    lag_1 = precio de hoy (shift 0), lag_2 = ayer, ..., lag_N = hace N-1 días.
-    #    Esto debe coincidir con cómo predict.py arma el vector en inferencia.
+    # 2. Crear features de lag con la lógica compartida (ver src/features.py).
+    #    lag_1 = hoy, lag_2 = ayer, ..., target = día siguiente.
     lookback = p["lookback_days"]
-    for lag in range(1, lookback + 1):
-        df[f'precio_lag_{lag}'] = df['PrecioPromedio'].shift(lag - 1)
-
-    # La variable objetivo es el precio del día siguiente
-    df['precio_target'] = df['PrecioPromedio'].shift(-1)
+    df = build_lag_features(df, lookback)
 
     # Eliminar filas con NaN (las primeras por los lags y la última por el target)
     df = df.dropna()
 
-    X = df[[f'precio_lag_{i}' for i in range(1, lookback + 1)]]
+    X = df[feature_columns(lookback)]
     y = df['precio_target']
 
     # 3. Dividir en entrenamiento y validación (últimos N días para validación)
