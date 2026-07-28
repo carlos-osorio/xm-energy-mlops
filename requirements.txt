@@ -1,8 +1,8 @@
-dvc[gs]
-wandb
-pandas
-scikit-learn
-lightgbm
-pyyaml
-requests
-pydataxm
+dvc[gs]==3.67.1
+wandb==0.28.1
+pandas==3.0.3
+scikit-learn==1.9.0
+lightgbm==4.7.0
+pyyaml==6.0.3
+requests==2.34.2
+pydataxm==0.3.18

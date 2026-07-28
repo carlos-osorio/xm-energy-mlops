@@ -6,6 +6,9 @@ import wandb
 from sklearn.metrics import mean_squared_error
 from src.lineage import log_lineage_to_wandb
 
+# Semilla global para reproducibilidad del entrenamiento
+SEED = 42
+
 def train_model():
     print("🔄 Iniciando entrenamiento del modelo LightGBM...")
     
@@ -54,7 +57,8 @@ def train_model():
         'num_leaves': 31,
         'feature_fraction': 0.9,
         'bagging_fraction': 0.8,
-        'bagging_freq': 5
+        'bagging_freq': 5,
+        'seed': SEED  # fija bagging_seed, feature_fraction_seed, etc. -> reproducibilidad
     }
     
     print("🚀 Entrenando modelo...")
@@ -87,6 +91,7 @@ def train_model():
             "learning_rate": 0.05,
             "num_leaves": 31,
             "lookback_days": 7,
+            "seed": SEED,
             "rmse": rmse
         }
     )
