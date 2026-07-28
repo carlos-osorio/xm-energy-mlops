@@ -72,12 +72,13 @@ def download_xm_data():
             
             return df_daily
         else:
-            print("⚠️ No se encontraron datos en la respuesta de SIMEM")
-            return None
-            
+            raise RuntimeError("No se encontraron datos en la respuesta de SIMEM")
+
     except Exception as e:
-        print(f" Error al descargar datos de XM: {e}")
-        return None
+        # Registramos el error con contexto y re-lanzamos para que el pipeline
+        # falle con código distinto de 0 (evita fallos silenciosos en CI).
+        print(f"❌ Error al descargar datos de XM: {e}")
+        raise
 
 if __name__ == "__main__":
     download_xm_data()

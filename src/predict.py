@@ -8,8 +8,9 @@ def predict_next_day():
     model_path = Path("models/lgbm_model.txt")
     print(f"🔍 Cargando modelo local desde: {model_path}...")
     if not model_path.exists():
-        print(f"❌ No se encontró el modelo en {model_path}. ¿Corrió la etapa 'train'?")
-        return
+        raise FileNotFoundError(
+            f"No se encontró el modelo en {model_path}. ¿Corrió la etapa 'train'?"
+        )
 
     model = lgb.Booster(model_file=str(model_path))
     print("✅ Modelo cargado.")
