@@ -13,7 +13,7 @@ jobs:
   mlops-pipeline:
     runs-on: ubuntu-latest
     env:
-      WANDB_API_KEY: ${{ secrets.WANDB_API_KEY }}
+      WANDB_MODE: offline
 
     steps:
       - name: Checkout code
@@ -48,13 +48,9 @@ jobs:
         run: dvc repro
 
       - name: Train Model
-        env:
-          WANDB_API_KEY: ${{ secrets.WANDB_API_KEY }}
         run: python -m src.train
 
       - name: Run Batch Inference
-        env:
-          WANDB_API_KEY: ${{ secrets.WANDB_API_KEY }}
         run: python -m src.predict
 
       - name: Push data to GCS
