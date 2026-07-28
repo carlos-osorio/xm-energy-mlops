@@ -7,7 +7,7 @@ on:
 
 permissions:
   id-token: write
-  contents: read
+  contents: write
 
 jobs:
   mlops-pipeline:
@@ -44,14 +44,8 @@ jobs:
           pip install "dvc[gs]"
           pip install pydataxm
 
-      - name: Run DVC Pipeline (Ingest)
+      - name: Run DVC Pipeline (ingest → train → predict)
         run: dvc repro
-
-      - name: Train Model
-        run: python -m src.train
-
-      - name: Run Batch Inference
-        run: python -m src.predict
 
       - name: Push data to GCS
         run: dvc push
