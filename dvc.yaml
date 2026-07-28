@@ -1,5 +1,26 @@
 stages:
-  ingest_data:
-    cmd: python src/ingest.py
+  ingest:
+    cmd: python src/ingest_xm.py
+    deps:
+      - src/ingest_xm.py
     outs:
-      - data/raw/sample_timeseries.csv
+      - data/raw/price_xm_daily.csv:
+          cache: true
+  
+  train:
+    cmd: python -m src.train
+    deps:
+      - src/train.py
+      - data/raw/price_xm_daily.csv
+    outs:
+      - models/lgbm_model.txt:
+          cache: true
+  
+  predict:
+    cmd: python -m src.predict
+    deps:
+      - src/predict.py
+      - models/lgbm_model.txt
+    outs:
+      - data/processed/prediction.csv:
+          cache: false

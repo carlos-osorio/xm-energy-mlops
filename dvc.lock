@@ -7,3 +7,47 @@ stages:
       hash: md5
       md5: 46eb96d32e066169b51079abea466927
       size: 60619
+  ingest:
+    cmd: python src/ingest_xm.py
+    deps:
+    - path: src/ingest_xm.py
+      hash: md5
+      md5: 58ea9663e310a43cebd78de1e7cbae59
+      size: 3724
+    outs:
+    - path: data/raw/price_xm_daily.csv
+      hash: md5
+      md5: 0d25a333f8f69328fa6eb45ed78fb876
+      size: 21207
+  train:
+    cmd: python -m src.train
+    deps:
+    - path: data/raw/price_xm_daily.csv
+      hash: md5
+      md5: 0d25a333f8f69328fa6eb45ed78fb876
+      size: 21207
+    - path: src/train.py
+      hash: md5
+      md5: d8962fffabb43830ef644d1eb7482f63
+      size: 3600
+    outs:
+    - path: models/lgbm_model.txt
+      hash: md5
+      md5: 4d24456d17940b1dc5d6fa88010db363
+      size: 126456
+  predict:
+    cmd: python -m src.predict
+    deps:
+    - path: models/lgbm_model.txt
+      hash: md5
+      md5: 4d24456d17940b1dc5d6fa88010db363
+      size: 126456
+    - path: src/predict.py
+      hash: md5
+      md5: 2c8ef0116153c1e91dc6a938bdf5e802
+      size: 3437
+    outs:
+    - path: data/processed/prediction.csv
+      hash: md5
+      md5: 0c33e0c2760c6fa4e5165d1152e1e1b1
+      size: 135
