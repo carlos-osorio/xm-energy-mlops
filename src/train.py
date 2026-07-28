@@ -19,14 +19,16 @@ def train_model():
     
     print(f"📊 Total de registros: {len(df)}")
     
-    # 2. Crear features de lag (últimos 7 días)
+    # 2. Crear features de lag: los últimos 7 días INCLUYENDO hoy.
+    #    lag_1 = precio de hoy (shift 0), lag_2 = ayer, ..., lag_7 = hace 6 días.
+    #    Esto debe coincidir con cómo predict.py arma el vector en inferencia.
     for lag in range(1, 8):
-        df[f'precio_lag_{lag}'] = df['PrecioPromedio'].shift(lag)
-    
+        df[f'precio_lag_{lag}'] = df['PrecioPromedio'].shift(lag - 1)
+
     # La variable objetivo es el precio del día siguiente
     df['precio_target'] = df['PrecioPromedio'].shift(-1)
-    
-    # Eliminar filas con NaN (las primeras 7 y la última)
+
+    # Eliminar filas con NaN (las primeras 6 por los lags y la última por el target)
     df = df.dropna()
     
     X = df[[f'precio_lag_{i}' for i in range(1, 8)]]

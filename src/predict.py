@@ -25,13 +25,14 @@ def predict_next_day():
 
     # 3. Preparar el vector de features
     # El modelo espera: [precio_lag_1, precio_lag_2, ..., precio_lag_7]
-    # precio_lag_1 es el precio de "ayer" (el más reciente), precio_lag_7 es el más antiguo.
-    # Invertimos el array para que coincida con el orden de entrenamiento.
+    # precio_lag_1 es el precio de HOY (el más reciente), precio_lag_7 es el más antiguo.
+    # last_7_prices viene en orden cronológico (ascendente); lo invertimos para que
+    # el más reciente quede en lag_1, igual que en el entrenamiento.
     X_pred = np.array([last_7_prices[::-1]])
 
     # 4. Predecir el precio del día siguiente
     precio_manana_pred = model.predict(X_pred)[0]
-    precio_hoy = last_7_prices[0]  # El más reciente en el CSV
+    precio_hoy = last_7_prices[-1]  # El más reciente en el CSV (último cronológicamente)
 
     print("-" * 40)
     print(f"📊 Precio de referencia (último dato): ${precio_hoy:.2f} $/MWh")
