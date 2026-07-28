@@ -38,7 +38,7 @@ jobs:
         uses: google-github-actions/setup-gcloud@v2
 
       - name: Install DVC and pydataxm
-        run: 
+        run: |
           pip install "dvc[gs]"
           pip install pydataxm
 
