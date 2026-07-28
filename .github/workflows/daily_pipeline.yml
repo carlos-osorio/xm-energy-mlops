@@ -39,11 +39,6 @@ jobs:
       - name: Set up Cloud SDK
         uses: google-github-actions/setup-gcloud@v2
 
-      - name: Install DVC and pydataxm
-        run: |
-          pip install "dvc[gs]"
-          pip install pydataxm
-
       - name: Run DVC Pipeline (ingest → train → predict)
         run: dvc repro
 
