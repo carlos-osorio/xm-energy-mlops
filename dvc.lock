@@ -12,46 +12,64 @@ stages:
     deps:
     - path: src/ingest_xm.py
       hash: md5
-      md5: 9e141fdbc2648b9eba16ecb08c9fce92
-      size: 3642
+      md5: 945f105215c5c1fbe85fa317acaac17b
+      size: 3764
     outs:
     - path: data/raw/price_xm_daily.csv
       hash: md5
-      md5: 2c2a054a16b78ed8dc4c5246889a37df
+      md5: 9a9c7547743f745c81b7895098e66487
       size: 20478
+    - path: data/raw/price_xm_hourly.csv
+      hash: md5
+      md5: d1bcd64c06450597297bf5aa77a286bf
+      size: 6878503
   train:
     cmd: python -m src.train
     deps:
     - path: data/raw/price_xm_daily.csv
       hash: md5
-      md5: 2c2a054a16b78ed8dc4c5246889a37df
+      md5: 9a9c7547743f745c81b7895098e66487
       size: 20478
     - path: src/train.py
       hash: md5
-      md5: f4d1833be8c96afc016460280caba982
-      size: 3486
+      md5: b76d582666b5011efd2d0bbe053fa25f
+      size: 3762
+    params:
+      params.yaml:
+        train:
+          seed: 42
+          lookback_days: 7
+          validation_days: 30
+          num_boost_round: 100
+          early_stopping_rounds: 10
+          lgbm:
+            learning_rate: 0.05
+            num_leaves: 31
+            feature_fraction: 0.9
+            bagging_fraction: 0.8
+            bagging_freq: 5
     outs:
     - path: models/lgbm_model.txt
       hash: md5
-      md5: 7350e0dcaedc552a65f8eee63bc48e5e
-      size: 126454
+      md5: 6c5f478600a3398bd3c1a82b4cbca1c9
+      size: 98848
   predict:
     cmd: python -m src.predict
     deps:
     - path: data/raw/price_xm_daily.csv
       hash: md5
-      md5: 2c2a054a16b78ed8dc4c5246889a37df
+      md5: 9a9c7547743f745c81b7895098e66487
       size: 20478
     - path: models/lgbm_model.txt
       hash: md5
-      md5: 7350e0dcaedc552a65f8eee63bc48e5e
-      size: 126454
+      md5: 6c5f478600a3398bd3c1a82b4cbca1c9
+      size: 98848
     - path: src/predict.py
       hash: md5
-      md5: b9a146abe6a2e3a007cf90abd9334d13
-      size: 2239
+      md5: 36696f3dfabb52fe7192cb3584bec93c
+      size: 2247
     outs:
     - path: data/processed/prediction.csv
       hash: md5
-      md5: ce6c6c511197e530b32b027890f2971f
+      md5: 9a5ce9c4bf1121732a41c58981768092
       size: 133
