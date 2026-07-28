@@ -59,7 +59,7 @@ xm-energy-mlops/
 │   ├── predict.py              # Predice el precio del día siguiente
 │   └── lineage.py              # Registra linaje (Git + DVC) en W&B
 ├── tests/                      # Suite de pytest
-├── params.yaml                 # Hiperparámetros (fuente única de verdad)
+├── params.yaml                 # Hiperparámetros
 ├── data/
 │   ├── raw/                    # Datos crudos (versionados con DVC, no en git)
 │   └── processed/              # Predicciones
