@@ -21,6 +21,7 @@ stages:
     deps:
       - src/predict.py
       - models/lgbm_model.txt
+      - data/raw/price_xm_daily.csv
     outs:
       - data/processed/prediction.csv:
           cache: false
