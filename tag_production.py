@@ -4,7 +4,7 @@ api = wandb.Api()
 
 entity = api.default_entity
 project = "xm-energy-mlops"
-target_run_name = "lgbm-mvp-training"
+target_run_name = "price-daily-prediction"  # Nuevo nombre del run
 
 print(f"🔍 Buscando en: {entity}/{project}")
 
@@ -22,7 +22,7 @@ try:
             for artifact in artifacts:
                 print(f"  -> Artefacto encontrado: {artifact.name} (tipo: {artifact.type})")
                 
-                if "lgbm-mvp-model" in artifact.name:
+                if "lgbm-price-model" in artifact.name:  # Cambiado de lgbm-mvp-model
                     if "production" not in artifact.aliases:
                         artifact.aliases.append("production")
                         artifact.save()
@@ -33,7 +33,7 @@ try:
                     break  # Salimos del loop de artefactos
             
             if not found_artifact:
-                print("⚠️ No se encontró ningún artefacto con 'lgbm-mvp-model' en este run.")
+                print("⚠️ No se encontró ningún artefacto con 'lgbm-price-model' en este run.")
             
             break  # Salimos del loop de runs una vez encontramos el correcto
 
