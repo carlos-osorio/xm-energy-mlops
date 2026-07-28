@@ -6,6 +6,8 @@ stages:
     outs:
       - data/raw/price_xm_daily.csv:
           cache: true
+      - data/raw/price_xm_hourly.csv:
+          cache: true
   
   train:
     cmd: python -m src.train
