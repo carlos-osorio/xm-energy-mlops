@@ -1,0 +1,14 @@
+# Hiperparámetros del pipeline — fuente única de verdad.
+# DVC rastrea este archivo (ver dvc.yaml); cambiar un valor re-ejecuta 'train'.
+train:
+  seed: 42                 # reproducibilidad del entrenamiento
+  lookback_days: 7         # nº de precios pasados usados como features (incluye hoy)
+  validation_days: 30      # últimos N días reservados para validación
+  num_boost_round: 100     # iteraciones máximas de boosting
+  early_stopping_rounds: 10
+  lgbm:                    # parámetros propios de LightGBM
+    learning_rate: 0.05
+    num_leaves: 31
+    feature_fraction: 0.9
+    bagging_fraction: 0.8
+    bagging_freq: 5

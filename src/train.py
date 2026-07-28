@@ -1,15 +1,19 @@
 import pandas as pd
 import numpy as np
 import lightgbm as lgb
+import yaml
 from pathlib import Path
 import wandb
 from sklearn.metrics import mean_squared_error
 from src.lineage import log_lineage_to_wandb
 
-# Semilla global para reproducibilidad del entrenamiento
-SEED = 42
+def load_params():
+    """Carga los hiperparámetros desde params.yaml (fuente única de verdad)."""
+    with open("params.yaml", "r") as f:
+        return yaml.safe_load(f)["train"]
 
 def train_model():
+    p = load_params()
     print("🔄 Iniciando entrenamiento del modelo LightGBM...")
     
     # 1. Cargar datos reales de precios diarios de XM
@@ -22,23 +26,24 @@ def train_model():
     
     print(f"📊 Total de registros: {len(df)}")
     
-    # 2. Crear features de lag: los últimos 7 días INCLUYENDO hoy.
-    #    lag_1 = precio de hoy (shift 0), lag_2 = ayer, ..., lag_7 = hace 6 días.
+    # 2. Crear features de lag: los últimos `lookback_days` precios INCLUYENDO hoy.
+    #    lag_1 = precio de hoy (shift 0), lag_2 = ayer, ..., lag_N = hace N-1 días.
     #    Esto debe coincidir con cómo predict.py arma el vector en inferencia.
-    for lag in range(1, 8):
+    lookback = p["lookback_days"]
+    for lag in range(1, lookback + 1):
         df[f'precio_lag_{lag}'] = df['PrecioPromedio'].shift(lag - 1)
 
     # La variable objetivo es el precio del día siguiente
     df['precio_target'] = df['PrecioPromedio'].shift(-1)
 
-    # Eliminar filas con NaN (las primeras 6 por los lags y la última por el target)
+    # Eliminar filas con NaN (las primeras por los lags y la última por el target)
     df = df.dropna()
-    
-    X = df[[f'precio_lag_{i}' for i in range(1, 8)]]
+
+    X = df[[f'precio_lag_{i}' for i in range(1, lookback + 1)]]
     y = df['precio_target']
-    
-    # 3. Dividir en entrenamiento y validación (últimos 30 días para validación)
-    split_idx = len(df) - 30
+
+    # 3. Dividir en entrenamiento y validación (últimos N días para validación)
+    split_idx = len(df) - p["validation_days"]
     X_train, X_val = X.iloc[:split_idx], X.iloc[split_idx:]
     y_train, y_val = y.iloc[:split_idx], y.iloc[split_idx:]
     
@@ -53,21 +58,17 @@ def train_model():
         'objective': 'regression',
         'metric': 'l2',
         'verbosity': -1,
-        'learning_rate': 0.05,
-        'num_leaves': 31,
-        'feature_fraction': 0.9,
-        'bagging_fraction': 0.8,
-        'bagging_freq': 5,
-        'seed': SEED  # fija bagging_seed, feature_fraction_seed, etc. -> reproducibilidad
+        **p['lgbm'],           # hiperparámetros de LightGBM desde params.yaml
+        'seed': p['seed'],     # fija bagging_seed, feature_fraction_seed, etc.
     }
-    
+
     print("🚀 Entrenando modelo...")
     model = lgb.train(
         params,
         train_data,
-        num_boost_round=100,
+        num_boost_round=p['num_boost_round'],
         valid_sets=[val_data],
-        callbacks=[lgb.early_stopping(10), lgb.log_evaluation(10)]
+        callbacks=[lgb.early_stopping(p['early_stopping_rounds']), lgb.log_evaluation(10)]
     )
     
     # 5. Evaluar en validación
@@ -88,10 +89,7 @@ def train_model():
         name="price-daily-prediction",
         config={
             "model_type": "lightgbm",
-            "learning_rate": 0.05,
-            "num_leaves": 31,
-            "lookback_days": 7,
-            "seed": SEED,
+            **p,               # todos los hiperparámetros, sin duplicar
             "rmse": rmse
         }
     )

@@ -14,6 +14,8 @@ stages:
     deps:
       - src/train.py
       - data/raw/price_xm_daily.csv
+    params:
+      - train
     outs:
       - models/lgbm_model.txt:
           cache: true
