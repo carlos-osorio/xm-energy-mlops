@@ -6,7 +6,7 @@
 ## Objetivo
 
 Evolucionar el pipeline actual (un workflow monolítico `ingest → train → predict`
-que corre a diario) hacia una arquitectura MLOps madura con:
+que corre diariamente) hacia una arquitectura MLOps madura con:
 
 1. Separación de responsabilidades en **entrenamiento** e **inferencia**.
 2. Un **registro de modelos** con concepto de "modelo de producción".
@@ -20,7 +20,7 @@ que corre a diario) hacia una arquitectura MLOps madura con:
 | Registro de modelos | **DVC/GCS, sin W&B** (autocontenido, sin secrets) |
 | Cadencia | **Inferencia diaria**, **entrenamiento semanal** |
 | Promoción | **Manual** (human-in-the-loop) |
-| Orquestación | **Enfoque A**: DVC versiona artefactos; scripts en `src/` orquestados por workflows |
+| Orquestación | DVC versiona artefactos; scripts en `src/` orquestados por workflows |
 
 ## Arquitectura
 
