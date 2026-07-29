@@ -1,7 +1,7 @@
 # Diseño — Maduración del pipeline Predicción XM-Energy (MLOps)
 
 **Fecha:** 2026-07-28
-**Estado:** Aprobado (pendiente de plan de implementación)
+**Estado:** Implementado y validado en CI (2026-07-28, PR #1)
 
 ## Objetivo
 
