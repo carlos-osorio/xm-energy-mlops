@@ -36,3 +36,10 @@ def test_sane_values():
     assert p["lookback_days"] > 0
     assert p["validation_days"] > 0
     assert 0 < p["lgbm"]["learning_rate"] <= 1
+
+
+def test_promotion_margin_present_and_sane():
+    p = load()
+    assert "promotion" in p, "Falta la sección 'promotion' en params.yaml"
+    margin = p["promotion"]["margin"]
+    assert 0 < margin < 1, "promotion.margin debe estar entre 0 y 1"
