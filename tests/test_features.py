@@ -7,6 +7,7 @@ import numpy as np
 import pandas as pd
 
 from src.features import build_lag_features, feature_columns, build_inference_vector
+from src.features import make_supervised, chronological_split
 
 LOOKBACK = 7
 
@@ -63,3 +64,25 @@ def test_inference_vector_order_and_length():
 
 def test_feature_columns():
     assert feature_columns(3) == ["precio_lag_1", "precio_lag_2", "precio_lag_3"]
+
+
+def test_make_supervised_shapes_and_columns():
+    prices = _sample_prices()  # 30 valores
+    df = pd.DataFrame({"PrecioPromedio": prices})
+    X, y = make_supervised(df, LOOKBACK)
+    # dropna quita las primeras (LOOKBACK-1) filas y la última (target NaN)
+    assert list(X.columns) == feature_columns(LOOKBACK)
+    assert len(X) == len(y) == len(prices) - (LOOKBACK - 1) - 1
+    assert not X.isna().any().any()
+    assert not y.isna().any()
+
+
+def test_chronological_split_sizes_and_order():
+    prices = _sample_prices()
+    df = pd.DataFrame({"PrecioPromedio": prices})
+    X, y = make_supervised(df, LOOKBACK)
+    X_tr, X_val, y_tr, y_val = chronological_split(X, y, validation_days=5)
+    assert len(X_val) == 5 and len(y_val) == 5
+    assert len(X_tr) == len(X) - 5
+    # el split respeta el orden temporal (validación es el tramo final)
+    assert X_val.index[0] == X.index[len(X) - 5]

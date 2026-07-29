@@ -6,7 +6,7 @@ from pathlib import Path
 import wandb
 from sklearn.metrics import mean_squared_error
 from src.lineage import log_lineage_to_wandb
-from src.features import build_lag_features, feature_columns
+from src.features import make_supervised, chronological_split
 
 def load_params():
     """Carga los hiperparámetros desde params.yaml (fuente única de verdad)."""
@@ -30,19 +30,9 @@ def train_model():
     # 2. Crear features de lag con la lógica compartida (ver src/features.py).
     #    lag_1 = hoy, lag_2 = ayer, ..., target = día siguiente.
     lookback = p["lookback_days"]
-    df = build_lag_features(df, lookback)
+    X, y = make_supervised(df, lookback)
+    X_train, X_val, y_train, y_val = chronological_split(X, y, p["validation_days"])
 
-    # Eliminar filas con NaN (las primeras por los lags y la última por el target)
-    df = df.dropna()
-
-    X = df[feature_columns(lookback)]
-    y = df['precio_target']
-
-    # 3. Dividir en entrenamiento y validación (últimos N días para validación)
-    split_idx = len(df) - p["validation_days"]
-    X_train, X_val = X.iloc[:split_idx], X.iloc[split_idx:]
-    y_train, y_val = y.iloc[:split_idx], y.iloc[split_idx:]
-    
     print(f"🎯 Entrenamiento: {len(X_train)} muestras")
     print(f"🎯 Validación: {len(X_val)} muestras")
     
