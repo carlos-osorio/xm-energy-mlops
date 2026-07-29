@@ -3,9 +3,10 @@ import numpy as np
 import lightgbm as lgb
 import yaml
 from pathlib import Path
-import wandb
+from datetime import date
 from sklearn.metrics import mean_squared_error
-from src.lineage import log_lineage_to_wandb
+from src import registry
+from src.lineage import get_git_commit, get_dvc_hash
 from src.features import make_supervised, chronological_split
 
 def load_params():
@@ -62,45 +63,24 @@ def train_model():
     rmse = np.sqrt(mean_squared_error(y_val, y_pred))
     print(f"✅ RMSE en validación: {rmse:.2f} $/MWh")
     
-    # 6. Guardar modelo localmente
-    model_dir = Path("models")
-    model_dir.mkdir(exist_ok=True)
-    model_path = model_dir / "lgbm_model.txt"
-    model.save_model(str(model_path))
-    print(f"💾 Modelo guardado en: {model_path}")
-    
-    # 7. Registrar en W&B
-    run = wandb.init(
-        project="xm-energy-mlops",
-        name="price-daily-prediction",
-        config={
-            "model_type": "lightgbm",
-            **p,               # todos los hiperparámetros, sin duplicar
-            "rmse": rmse
-        }
-    )
-    
-    # Registrar linaje de Git y DVC
-    log_lineage_to_wandb(run)
-    
-    # Registrar métricas
-    run.log({
+    # 6. Guardar el modelo candidato
+    registry.CANDIDATE_MODEL.parent.mkdir(parents=True, exist_ok=True)
+    model.save_model(str(registry.CANDIDATE_MODEL))
+    print(f"💾 Modelo candidato guardado en: {registry.CANDIDATE_MODEL}")
+
+    # 7. Registrar métricas y trazabilidad del candidato
+    metrics = {
         "rmse": rmse,
-        "train_samples": len(X_train),
-        "val_samples": len(X_val)
-    })
-    
-    # Registrar el modelo como artefacto
-    model_artifact = wandb.Artifact(
-        name="lgbm-price-model",
-        type="model",
-        description="Modelo LightGBM para predicción de precio diario de bolsa"
-    )
-    model_artifact.add_file(str(model_path))
-    run.log_artifact(model_artifact)
-    
-    run.finish()
-    print("✅ Entrenamiento completado y registrado en W&B")
+        "trained_at": date.today().isoformat(),
+        "git_sha": get_git_commit(),
+        "data_hash": get_dvc_hash(),
+        "n_train": len(X_train),
+        "n_val": len(X_val),
+        "params": p,
+    }
+    registry.write_json(registry.CANDIDATE_METRICS, metrics)
+    print(f"📝 Métricas del candidato guardadas en: {registry.CANDIDATE_METRICS}")
+    print("✅ Entrenamiento completado.")
 
 if __name__ == "__main__":
     train_model()
