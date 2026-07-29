@@ -1,8 +1,8 @@
-name: Daily MLOps Pipeline
+name: Inference Pipeline
 
 on:
   schedule:
-    - cron: '0 2 * * *'
+    - cron: '0 2 * * *'   # diario 02:00 UTC
   workflow_dispatch:
 
 permissions:
@@ -10,11 +10,8 @@ permissions:
   contents: write
 
 jobs:
-  mlops-pipeline:
+  inference:
     runs-on: ubuntu-latest
-    env:
-      WANDB_MODE: offline
-
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -42,16 +39,22 @@ jobs:
       - name: Set up Cloud SDK
         uses: google-github-actions/setup-gcloud@v2
 
-      - name: Run DVC Pipeline (ingest → train → predict)
-        run: dvc repro
+      - name: Pull production model from GCS
+        run: dvc pull
+
+      - name: Ingest fresh data
+        run: dvc repro ingest
+
+      - name: Predict with production model
+        run: python -m src.predict
 
       - name: Push data to GCS
         run: dvc push
 
-      - name: Commit and push DVC metadata
+      - name: Commit DVC metadata
         run: |
           git config --global user.name "github-actions[bot]"
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
           git add -A
-          git commit -m "chore: update DVC metadata after pipeline run" || echo "No changes to commit"
-          git push || echo "No changes to push"
+          git commit -m "chore: prediccion diaria" || echo "Sin cambios"
+          git push || echo "Sin cambios para push"
