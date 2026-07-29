@@ -9,13 +9,14 @@ venv/
 data/raw/*.csv
 data/processed/*.csv
 
-# Modelos locales
-models/
+# Modelos: binarios versionados con DVC (se rastrean los .dvc, no los .txt)
+models/**/*.txt
 
 # Variables de entorno y secretos
 .env
 *.json
 !dvc.yaml
+!metrics/*.json
 
 # Python
 __pycache__/
