@@ -159,7 +159,7 @@ El registro de modelos tiene dos niveles — `candidate` (recién entrenado) y `
 1. **Entrenamiento:** `training.yml` corre semanalmente (o manualmente), entrena un candidato nuevo y lo evalúa contra el modelo de producción actual usando el margen definido en `params.yaml` (`promotion.margin`, 1% de mejora relativa de RMSE).
 2. **Revisión:** el resultado del gate queda en `metrics/comparison.json` (también publicado como artifact de la corrida), con una recomendación `PROMOTE` o `KEEP`.
 3. **Promoción:** si la recomendación es `PROMOTE`, alguien dispara manualmente `promote.yml`, que copia el candidato a `models/production/` y actualiza `metrics/production.json`.
-4. **Bootstrap:** en un repo nuevo no existe todavía modelo de producción. La primera corrida de `training.yml` genera el primer candidato (el gate lo recomienda por defecto al no haber baseline); tras promoverlo manualmente con `promote.yml`, `inference.yml` puede empezar a correr con normalidad — el cron diario simplemente fallará (sin modelo de producción que cargar) hasta que exista al menos una promoción.
+4. **Bootstrap:** en un repo nuevo no existe todavía modelo de producción. La primera corrida de `training.yml` genera el primer candidato (el gate lo recomienda por defecto al no haber baseline). Hasta ese momento, el cron diario de `inference.yml` fallará por diseño (no hay modelo de producción que cargar); en cuanto se dispara `promote.yml` y siembra el primer modelo en `models/production/`, `inference.yml` empieza a correr con normalidad.
 
 ---
 
