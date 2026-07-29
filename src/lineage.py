@@ -30,16 +30,3 @@ def get_dvc_hash():
                     return stage_data['outs'][0].get('md5', 'unknown')
     
     return 'unknown'
-
-def log_lineage_to_wandb(run):
-    """Registra los hashes de Git y DVC en el run de W&B."""
-    git_commit = get_git_commit()
-    dvc_hash = get_dvc_hash()
-    
-    # Registrar como configuración inmutable del run
-    run.config.update({
-        'git_commit': git_commit,
-        'dvc_data_hash': dvc_hash
-    })
-    
-    print(f"Linaje registrado - Git: {git_commit}, DVC: {dvc_hash}")
