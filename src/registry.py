@@ -20,10 +20,10 @@ COMPARISON_METRICS = METRICS_DIR / "comparison.json"
 def write_json(path, data):
     path = Path(path)
     path.parent.mkdir(parents=True, exist_ok=True)
-    with open(path, "w") as f:
+    with open(path, "w", encoding="utf-8") as f:
         json.dump(data, f, indent=2)
 
 
 def read_json(path):
-    with open(Path(path), "r") as f:
+    with open(Path(path), "r", encoding="utf-8") as f:
         return json.load(f)

@@ -1,6 +1,17 @@
 """Evaluación del candidato contra el modelo de producción (gate de promoción)."""
 from __future__ import annotations
 
+from datetime import date
+
+import numpy as np
+import pandas as pd
+import lightgbm as lgb
+from sklearn.metrics import mean_squared_error
+
+from src import registry
+from src.features import make_supervised, chronological_split
+from src.lineage import get_git_commit
+
 
 def decide(rmse_candidate, rmse_production, margin):
     """Decide si promover el candidato.
@@ -13,19 +24,6 @@ def decide(rmse_candidate, rmse_production, margin):
     if rmse_candidate < rmse_production * (1 - margin):
         return "PROMOTE"
     return "KEEP"
-
-
-from datetime import date
-from pathlib import Path
-
-import numpy as np
-import pandas as pd
-import lightgbm as lgb
-from sklearn.metrics import mean_squared_error
-
-from src import registry
-from src.features import make_supervised, chronological_split
-from src.lineage import get_git_commit
 
 
 def build_comparison(rmse_candidate, rmse_production, margin, git_sha, evaluated_at):
@@ -47,7 +45,7 @@ def build_comparison(rmse_candidate, rmse_production, margin, git_sha, evaluated
 
 def _load_params():
     import yaml
-    with open("params.yaml", "r") as f:
+    with open("params.yaml", "r", encoding="utf-8") as f:
         return yaml.safe_load(f)
 
 
