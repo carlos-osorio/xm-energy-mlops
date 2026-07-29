@@ -1,0 +1,66 @@
+name: Training Pipeline
+
+on:
+  schedule:
+    - cron: '0 3 * * 1'   # lunes 03:00 UTC
+  workflow_dispatch:
+
+permissions:
+  id-token: write
+  contents: write
+
+jobs:
+  training:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: 'pip'
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements-dev.txt
+
+      - name: Run tests
+        run: pytest -v
+
+      - name: Authenticate to Google Cloud
+        uses: google-github-actions/auth@v2
+        with:
+          workload_identity_provider: 'projects/705685420706/locations/global/workloadIdentityPools/github-pool/providers/github-provider'
+          service_account: 'github-actions-sa@xm-energy-mlops.iam.gserviceaccount.com'
+
+      - name: Set up Cloud SDK
+        uses: google-github-actions/setup-gcloud@v2
+
+      - name: Pull data and models from GCS
+        run: dvc pull || echo "Nada que traer (primera corrida)"
+
+      - name: Train candidate (ingest + train)
+        run: dvc repro
+
+      - name: Evaluate candidate vs production
+        run: python -m src.evaluate
+
+      - name: Upload comparison report
+        uses: actions/upload-artifact@v4
+        with:
+          name: comparison-report
+          path: metrics/comparison.json
+
+      - name: Push artifacts to GCS
+        run: dvc push
+
+      - name: Commit metrics and DVC metadata
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git commit -m "chore: candidato entrenado y evaluado" || echo "Sin cambios"
+          git push || echo "Sin cambios para push"

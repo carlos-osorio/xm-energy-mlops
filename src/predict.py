@@ -2,14 +2,30 @@ import pandas as pd
 import lightgbm as lgb
 from pathlib import Path
 from src.features import build_inference_vector
+from src import registry
+
+
+def append_prediction(history_path, row):
+    """Añade `row` (dict) a un CSV historial en `history_path`.
+
+    Si el archivo no existe, lo crea con encabezado (orden de las keys del dict)
+    y escribe la fila. Si ya existe, añade la fila sin repetir encabezado.
+    """
+    history_path = Path(history_path)
+    history_path.parent.mkdir(parents=True, exist_ok=True)
+    row_df = pd.DataFrame([row])
+    write_header = not history_path.exists()
+    row_df.to_csv(history_path, mode="a", index=False, header=write_header)
+
 
 def predict_next_day():
     # 1. Cargar el modelo entrenado localmente en la etapa 'train'
-    model_path = Path("models/lgbm_model.txt")
+    model_path = registry.PRODUCTION_MODEL
     print(f"🔍 Cargando modelo local desde: {model_path}...")
     if not model_path.exists():
         raise FileNotFoundError(
-            f"No se encontró el modelo en {model_path}. ¿Corrió la etapa 'train'?"
+            f"No hay modelo de producción en {model_path}. "
+            "¿Se promovió algún modelo con promote.yml?"
         )
 
     model = lgb.Booster(model_file=str(model_path))
@@ -51,6 +67,16 @@ def predict_next_day():
     output_path = output_dir / "prediction.csv"
     prediction_df.to_csv(output_path, index=False)
     print(f"💾 Predicción guardada en: {output_path}")
+
+    # 6. Acumular la predicción en un historial versionado por git
+    history_path = Path("data/predictions_history.csv")
+    append_prediction(history_path, {
+        "fecha_generacion": prediction_df["fecha_generacion"].iloc[0],
+        "fecha_objetivo": prediction_df["fecha_objetivo"].iloc[0],
+        "precio_referencia": prediction_df["precio_referencia"].iloc[0],
+        "precio_predicho": prediction_df["precio_predicho"].iloc[0],
+    })
+    print(f"📈 Historial de predicciones actualizado en: {history_path}")
     print("🚀 Inferencia completada.")
 
 if __name__ == "__main__":

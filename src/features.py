@@ -41,3 +41,20 @@ def build_inference_vector(prices, lookback):
     """
     last = np.asarray(prices)[-lookback:]
     return np.array([last[::-1]])
+
+
+def make_supervised(df, lookback):
+    """DataFrame de precios -> (X, y) listos para entrenar/evaluar.
+
+    Aplica los lags, elimina NaN y separa features y objetivo.
+    """
+    df = build_lag_features(df, lookback).dropna()
+    X = df[feature_columns(lookback)]
+    y = df["precio_target"]
+    return X, y
+
+
+def chronological_split(X, y, validation_days):
+    """Separa (X, y) dejando los últimos `validation_days` como validación."""
+    split = len(X) - validation_days
+    return X.iloc[:split], X.iloc[split:], y.iloc[:split], y.iloc[split:]

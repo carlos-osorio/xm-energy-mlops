@@ -8,24 +8,18 @@ stages:
           cache: true
       - data/raw/price_xm_hourly.csv:
           cache: true
-  
+
   train:
     cmd: python -m src.train
     deps:
       - src/train.py
+      - src/features.py
       - data/raw/price_xm_daily.csv
     params:
       - train
     outs:
-      - models/lgbm_model.txt:
+      - models/candidate/lgbm_model.txt:
           cache: true
-  
-  predict:
-    cmd: python -m src.predict
-    deps:
-      - src/predict.py
-      - models/lgbm_model.txt
-      - data/raw/price_xm_daily.csv
-    outs:
-      - data/processed/prediction.csv:
+    metrics:
+      - metrics/candidate.json:
           cache: false
