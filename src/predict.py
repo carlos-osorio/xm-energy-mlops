@@ -2,14 +2,16 @@ import pandas as pd
 import lightgbm as lgb
 from pathlib import Path
 from src.features import build_inference_vector
+from src import registry
 
 def predict_next_day():
     # 1. Cargar el modelo entrenado localmente en la etapa 'train'
-    model_path = Path("models/lgbm_model.txt")
+    model_path = registry.PRODUCTION_MODEL
     print(f"🔍 Cargando modelo local desde: {model_path}...")
     if not model_path.exists():
         raise FileNotFoundError(
-            f"No se encontró el modelo en {model_path}. ¿Corrió la etapa 'train'?"
+            f"No hay modelo de producción en {model_path}. "
+            "¿Se promovió algún modelo con promote.yml?"
         )
 
     model = lgb.Booster(model_file=str(model_path))
