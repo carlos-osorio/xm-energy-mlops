@@ -1,0 +1,22 @@
+{
+  "rmse": 87.46454189912207,
+  "trained_at": "2026-07-29",
+  "git_sha": "490a9107d15e61b05e41e15dc977290efef326f9",
+  "data_hash": "46eb96d32e066169b51079abea466927",
+  "n_train": 691,
+  "n_val": 30,
+  "params": {
+    "seed": 42,
+    "lookback_days": 7,
+    "validation_days": 30,
+    "num_boost_round": 100,
+    "early_stopping_rounds": 10,
+    "lgbm": {
+      "learning_rate": 0.05,
+      "num_leaves": 31,
+      "feature_fraction": 0.9,
+      "bagging_fraction": 0.8,
+      "bagging_freq": 5
+    }
+  }
+}

@@ -30,10 +30,14 @@ stages:
       hash: md5
       md5: 9a9c7547743f745c81b7895098e66487
       size: 20478
+    - path: src/features.py
+      hash: md5
+      md5: 11415bba30c8d9dd01e09ae0a0c2be12
+      size: 2155
     - path: src/train.py
       hash: md5
-      md5: b76d582666b5011efd2d0bbe053fa25f
-      size: 3762
+      md5: 07e1481f8fe725cf049dc18e3b998a49
+      size: 3055
     params:
       params.yaml:
         train:
@@ -49,7 +53,11 @@ stages:
             bagging_fraction: 0.8
             bagging_freq: 5
     outs:
-    - path: models/lgbm_model.txt
+    - path: metrics/candidate.json
+      hash: md5
+      md5: a8516d96f1a3946c8f545c0c295ea14b
+      size: 508
+    - path: models/candidate/lgbm_model.txt
       hash: md5
       md5: 6c5f478600a3398bd3c1a82b4cbca1c9
       size: 98848

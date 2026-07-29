@@ -1,0 +1,9 @@
+{
+  "rmse_candidate": 87.46454189912207,
+  "rmse_production": null,
+  "delta_pct": null,
+  "margin_pct": 1.0,
+  "recommendation": "PROMOTE",
+  "evaluated_at": "2026-07-29",
+  "git_sha": "490a9107d15e61b05e41e15dc977290efef326f9"
+}
