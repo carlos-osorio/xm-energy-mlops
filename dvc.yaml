@@ -3,6 +3,7 @@ stages:
     cmd: python src/ingest_xm.py
     deps:
       - src/ingest_xm.py
+    always_changed: true  
     outs:
       - data/raw/price_xm_daily.csv:
           cache: true
