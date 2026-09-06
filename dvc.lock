@@ -17,12 +17,12 @@ stages:
     outs:
     - path: data/raw/price_xm_daily.csv
       hash: md5
-      md5: 3acbd8ba944ec07158df25a5cd7386fa
-      size: 20517
+      md5: aaf8481553fd84c25be19daa4bc51a74
+      size: 20518
     - path: data/raw/price_xm_hourly.csv
       hash: md5
-      md5: d70c1b985fe337850c72974cc3c5ae73
-      size: 6844933
+      md5: 22b0936fcb04e4e2c7ac3e95326bf0ad
+      size: 6831126
   train:
     cmd: python -m src.train
     deps:
