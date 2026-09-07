@@ -1,9 +1,9 @@
 {
-  "rmse": 131.6136549204356,
-  "trained_at": "2026-09-03",
-  "git_sha": "8c2b12c7ebc2fd8aae123e02e116816d63352470",
+  "rmse": 100.62092819167822,
+  "trained_at": "2026-09-07",
+  "git_sha": "a253c5d22fb4bf9b4e685fdfc791d017a8388827",
   "data_hash": "46eb96d32e066169b51079abea466927",
-  "n_train": 691,
+  "n_train": 690,
   "n_val": 30,
   "params": {
     "seed": 42,
