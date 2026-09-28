@@ -1,9 +1,9 @@
 {
-  "rmse_candidate": 81.57163663753273,
-  "rmse_production": 116.66702714370012,
-  "delta_pct": -30.08167034456102,
+  "rmse_candidate": 81.17857412251605,
+  "rmse_production": 109.60302820874146,
+  "delta_pct": -25.934004334342287,
   "margin_pct": 1.0,
   "recommendation": "PROMOTE",
-  "evaluated_at": "2026-09-21",
-  "git_sha": "aada7ad4b1870389940ecea4276efe476805779d"
+  "evaluated_at": "2026-09-28",
+  "git_sha": "33ffd41e93b3dec27184a585fafabbd1ea5169e9"
 }
