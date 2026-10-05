@@ -1,7 +1,7 @@
 {
-  "rmse": 81.17857412251605,
-  "trained_at": "2026-09-28",
-  "git_sha": "33ffd41e93b3dec27184a585fafabbd1ea5169e9",
+  "rmse": 76.04225337732312,
+  "trained_at": "2026-10-05",
+  "git_sha": "d12542e73ee7cf04f7ee3f59e932f170bb105adc",
   "data_hash": "46eb96d32e066169b51079abea466927",
   "n_train": 691,
   "n_val": 30,
